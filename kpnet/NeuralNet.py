@@ -1,6 +1,7 @@
 from kpnet import Layer
 import numpy as np
 from kpnet.Activations import *
+import h5py
 
 class NeuralNet():
     """this is the main neural net class"""
@@ -135,4 +136,25 @@ class NeuralNet():
         costs.append(cost)
         if print_cost:
             print(cost)
-        return costs            
+        return costs     
+
+    def save(self, file_name):
+        """Saves the weights of the neural net onto a file.
+           @param file_name: Name of the saved file.
+        """
+        file = h5py.File(file_name, "w")
+        for i in range(1,len(self.layers)):       
+            file.create_dataset('W'+str(i),data=self.parameters['W'+str(i)])
+            file.create_dataset('b'+str(i),data=self.parameters['b'+str(i)])
+        file.close();    
+
+
+    def load(self, file_name):
+        """Loads the weights of the neural net from a file.
+           @param file_name: Name of the file to load from.
+        """       
+        file = h5py.File(file_name, "r")
+        for i in range(1,len(self.layers)):       
+            self.parameters['W'+str(i)]= file['W'+str(i)][::]
+            self.parameters['b'+str(i)]= file['b'+str(i)][::]
+        file.close(); 
